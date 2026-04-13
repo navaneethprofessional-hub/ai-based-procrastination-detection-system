@@ -1,20 +1,15 @@
+# python database.py
+
 import sqlite3
 
-# connect to database (creates file if not exists)
 conn = sqlite3.connect("activity.db")
-
 cursor = conn.cursor()
 
-# create table
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS activity_logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    app_name TEXT,
-    timestamp TEXT
-)
-""")
+cursor.execute("SELECT * FROM activity_logs")
 
-conn.commit()
+rows = cursor.fetchall()
+
+for row in rows:
+    print(row)
+
 conn.close()
-
-print("Database and table created successfully")
