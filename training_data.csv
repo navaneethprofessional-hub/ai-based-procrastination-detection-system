@@ -1,15 +1,179 @@
 text,label
-Python tutorial,focus
-SQL course,focus
-Machine learning lecture,focus
-Coding practice,focus
-Project work,focus
-Reading documentation,focus
-Debugging code,focus
-Funny reels,distraction
-Instagram scroll,distraction
-YouTube entertainment,distraction
-Movie song,distraction
-Gaming video,distraction
-Netflix series,distraction
-Social media browsing,distraction
+python tutorial,focus
+sql course,focus
+machine learning lecture,focus
+coding practice,focus
+project work,focus
+reading documentation,focus
+debugging code,focus
+github repository,focus
+visual studio code,focus
+pycharm coding,focus
+jupyter notebook,focus
+terminal commands,focus
+data analysis python,focus
+backend development,focus
+pdf document,focus
+ppt presentation,focus
+powerpoint slides,focus
+study material pdf,focus
+lecture slides ppt,focus
+project zip file,focus
+source code zip,focus
+documentation pdf,focus
+notes pdf,focus
+report document,focus
+research paper reading,focus
+online course learning,focus
+data structures practice,focus
+algorithm solving,focus
+leetcode problems,focus
+hackerrank coding,focus
+system design study,focus
+software engineering notes,focus
+database management study,focus
+operating system concepts,focus
+computer networks study,focus
+ai course learning,focus
+deep learning notes,focus
+statistics learning,focus
+excel data analysis,focus
+power bi dashboard,focus
+tableau visualization,focus
+reading tech blogs,focus
+coding interview prep,focus
+resume building,focus
+project documentation,focus
+code review session,focus
+writing code scripts,focus
+learning new framework,focus
+frontend development,focus
+backend api development,focus
+flask project coding,focus
+django development,focus
+react learning,focus
+nodejs coding,focus
+writing assignments,focus
+preparing presentation,focus
+reading textbooks,focus
+college notes study,focus
+exam preparation,focus
+lab work coding,focus
+software testing practice,focus
+unit testing code,focus
+debugging errors,focus
+fixing bugs,focus
+writing reports,focus
+technical documentation,focus
+learning cloud computing,focus
+aws practice,focus
+azure learning,focus
+docker usage,focus
+kubernetes basics,focus
+linux terminal work,focus
+shell scripting,focus
+data cleaning python,focus
+data preprocessing,focus
+model training,focus
+ml model evaluation,focus
+code optimization,focus
+writing queries sql,focus
+database queries practice,focus
+coding challenge solving,focus
+problem solving practice,focus
+reading research articles,focus
+learning algorithms,focus
+system architecture study,focus
+learning cybersecurity,focus
+ethical hacking basics,focus
+network troubleshooting,focus
+server configuration,focus
+api testing,focus
+postman testing,focus
+git version control,focus
+github commits,focus
+code merging,focus
+branch management,focus
+devops learning,focus
+ci cd pipeline,focus
+project planning,focus
+task management,focus
+
+funny reels,distraction
+instagram scroll,distraction
+youtube entertainment,distraction
+movie song,distraction
+gaming video,distraction
+netflix series,distraction
+social media browsing,distraction
+free fire gameplay,distraction
+pubg match,distraction
+youtube shorts,distraction
+watching trailer,distraction
+web series,distraction
+music video,distraction
+random browsing,distraction
+time pass browsing,distraction
+scrolling reels,distraction
+watching memes,distraction
+online shopping,distraction
+amazon browsing,distraction
+flipkart browsing,distraction
+chatting whatsapp,distraction
+facebook scrolling,distraction
+watching random videos,distraction
+binging series,distraction
+celebrity news,distraction
+sports highlights,distraction
+cricket highlights,distraction
+football highlights,distraction
+watching ads,distraction
+movie trailer watching,distraction
+watching comedy videos,distraction
+standup comedy,distraction
+gaming streams,distraction
+twitch streaming,distraction
+youtube vlogs,distraction
+travel vlogs,distraction
+food vlogs,distraction
+entertainment news,distraction
+gossip videos,distraction
+music listening,distraction
+playlist listening,distraction
+watching cartoons,distraction
+anime watching,distraction
+watching series episodes,distraction
+late night browsing,distraction
+scrolling social media,distraction
+time waste browsing,distraction
+casual surfing internet,distraction
+checking notifications,distraction
+chatting friends,distraction
+group chatting,distraction
+messenger chatting,distraction
+watching prank videos,distraction
+reaction videos,distraction
+short video scrolling,distraction
+reels watching,distraction
+youtube autoplay,distraction
+watching unnecessary videos,distraction
+random youtube surfing,distraction
+watching gaming highlights,distraction
+esports streaming,distraction
+watching movies online,distraction
+ott browsing,distraction
+netflix binge watching,distraction
+amazon prime videos,distraction
+hotstar watching,distraction
+timepass gaming,distraction
+mobile games playing,distraction
+pc games playing,distraction
+casual gaming,distraction
+watching live streams,distraction
+entertainment interviews,distraction
+scrolling feeds,distraction
+checking instagram,distraction
+checking facebook,distraction
+checking twitter,distraction
+checking social media,distraction
+wasting time online,distraction
