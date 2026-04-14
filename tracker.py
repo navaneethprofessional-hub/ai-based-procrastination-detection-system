@@ -12,16 +12,16 @@ while True:
     try:
         window = gw.getActiveWindow()
 
-        # get current active window title
+        # get active window title
         if window and window.title:
-            app_name = window.title
+            app_name = window.title.strip()
         else:
-            app_name = "Unknown"
+            app_name = "unknown"
 
-        # get current timestamp
+        # current timestamp
         time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # insert data into database
+        # insert into database
         cursor.execute(
             "INSERT INTO activity_logs (app_name, timestamp) VALUES (?, ?)",
             (app_name, time_now)
