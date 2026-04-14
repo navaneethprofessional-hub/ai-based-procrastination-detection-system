@@ -1,2 +1,10 @@
+# database
 activity.db
+
+# python cache
 __pycache__/
+
+# ML model files
+model.pkl
+vectorizer.pkl
+*.pkl
