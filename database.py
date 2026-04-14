@@ -8,9 +8,9 @@ cursor = conn.cursor()
 cursor.execute("SELECT * FROM activity_logs")
 rows = cursor.fetchall()
 
-# print data
+# display data in readable format
 for row in rows:
-    print(row)
+    print(f"ID: {row[0]} | App: {row[1]} | Time: {row[2]}")
 
 # close connection
 conn.close()
