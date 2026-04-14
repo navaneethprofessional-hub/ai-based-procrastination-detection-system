@@ -1,85 +1,52 @@
 import re
+from model import predict_label
 
-# ---------------- CLEAN APP NAME ----------------
+# clean raw title
 def clean_app_name(app_name):
     app_name = app_name.lower()
-
-    # remove browser text
     app_name = app_name.replace("- google chrome", "")
     app_name = app_name.replace("- chrome", "")
-    app_name = app_name.replace("youtube -", "")
-    app_name = app_name.strip()
+    app_name = re.sub(r'[^\w\s-]', '', app_name)
+    return app_name.strip()
+
+
+# extract meaningful phrase (intelligent cleaning)
+def extract_meaning(app_name):
+    app_name = clean_app_name(app_name)
+
+    # split into parts
+    parts = [p.strip() for p in app_name.split("-") if p.strip()]
+
+    # remove common noise words
+    ignore_words = ["youtube", "chrome", "official", "watch", "new"]
+
+    clean_parts = []
+    for part in parts:
+        if not any(word in part for word in ignore_words):
+            clean_parts.append(part)
+
+    # choose best part (long but meaningful)
+    if clean_parts:
+        best = max(clean_parts, key=len)
+
+        # remove extra spaces
+        best = " ".join(best.split())
+
+        return best
 
     return app_name
 
 
-# ---------------- EXTRACT MEANINGFUL NAME ----------------
-def extract_meaning(app_name):
-    app_name = clean_app_name(app_name)
+# hybrid classification (ML + minimal intelligence)
+def classify(app_name):
+    cleaned = clean_app_name(app_name)
 
-    # YouTube handling
-    if "youtube" in app_name:
-        parts = app_name.split("-")
-
-        # try to extract channel name (last part)
-        if len(parts) > 1:
-            return parts[-1].strip()
-
-        return "youtube"
-
-    # GitHub
-    if "github" in app_name:
-        return "github"
-
-    # SQL
-    if "sql" in app_name:
-        return "sql"
-
-    # Python
-    if "python" in app_name:
-        return "python"
-
-    # Gaming
-    gaming_keywords = ["free fire", "pubg", "game", "gaming"]
-    if any(word in app_name for word in gaming_keywords):
-        return "gaming"
-
-    # Movies
-    movie_keywords = ["movie", "trailer"]
-    if any(word in app_name for word in movie_keywords):
-        return "movie"
-
-    # default → first meaningful word
-    return app_name.split()[0]
-
-
-# ---------------- CLASSIFICATION ----------------
-def classify(app_name, predict_label):
-    name = app_name.lower()
-
-    focus_keywords = [
-        "visual studio",
-        "code",
-        "github",
-        "sql",
-        "python",
-        "notebook",
-        "pycharm",
-        "terminal"
-    ]
-
-    distraction_keywords = [
-        "youtube",
-        "gaming",
-        "movie",
-        "instagram",
-        "reel"
-    ]
-
-    if any(k in name for k in focus_keywords):
+    # slight intelligence boost (not heavy rules)
+    if "github" in cleaned or "code" in cleaned:
         return "focus"
 
-    if any(k in name for k in distraction_keywords):
+    if "game" in cleaned or "video" in cleaned:
         return "distraction"
 
-    return predict_label(name)
+    # fallback to ML
+    return predict_label(cleaned)
