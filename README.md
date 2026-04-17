@@ -1,151 +1,201 @@
 # AI-Based Procrastination Detection System
 
 ## Overview:
-This project is an AI-powered productivity monitoring system that tracks user activity in real-time, classifies it into **focus** or **distraction**, and provides meaningful insights through an interactive dashboard.
-
-The system helps users understand their behavior patterns and improve productivity by identifying time spent on useful vs distracting activities.
+This project is an AI-powered productivity monitoring system that tracks user activity in real-time, classifies it into **focus** or **distraction**, and provides detailed insights through an interactive dashboard.
+The system enables users to analyze their behavior patterns on both daily and weekly levels, helping them improve productivity and reduce distractions through data-driven insights.
 
 
 ## Key Features:
-* Real-time activity tracking using active window detection
-* Automatic classification into focus and distraction
-* Smart categorization of YouTube content (e.g., YT Python, YT Food, YT Movie)
-* Interactive dashboard with visual analytics
-* Time-based productivity analysis
-* Personal insights and recommendations
-* Focus streak tracking
-* Lightweight and runs locally
+- Real-time activity tracking using active window detection  
+- Automatic classification into focus and distraction using Machine Learning  
+- Intelligent categorization of activities (e.g., YT Music, YT Movie, VS Code, PDF)  
+- Daily and Weekly productivity analysis  
+- Interactive dashboard with zoomable and dynamic charts  
+- Time-based and day-based trend analysis  
+- Separate insights for daily and weekly behavior  
+- Focus streak tracking with weekly streak day identification  
+- Personalized recommendations based on usage patterns  
+- Lightweight system running locally  
 
 
-## Tech Stack"
-
-* **Python** – Core programming language
-* **Streamlit** – Dashboard and visualization
-* **SQLite** – Local database for storing activity logs
-* **Machine Learning (Scikit-learn)** – Text classification
-* **Matplotlib & Pandas** – Data analysis and charts
-* **PyGetWindow** – Active window tracking
+## Tech Stack:
+- **Python** – Core programming language  
+- **Streamlit** – Interactive dashboard and UI  
+- **SQLite** – Local database for storing activity logs  
+- **Scikit-learn** – Machine learning model for classification  
+- **Pandas** – Data manipulation and analysis  
+- **Plotly** – Interactive charts and visualizations  
+- **PyGetWindow** – Active window tracking  
 
 
 ## Project Structure:
 procrastination_ai_system/
 │
-├── _pycache__/              # Python cache files
-├── .gitignore               # Ignored files configuration
-├── activity.db              # SQLite database (ignored in Git)
+├── pycache/
+├── .gitignore
+├── activity.db
 │
-├── analyzer.py              # Analysis logic (processing insights)
-├── dashboard.py             # Streamlit dashboard UI
-├── database.py              # Database connection & operations
-├── model.py                 # ML model loading and prediction
-├── test_model.py            # Testing ML model
-├── tracker.py               # Tracks user activity (core tracker)
-├── utils.py                 # Helper functions
-├── view_db.py               # View database records
+├── tracker.py
+├── database.py
+├── view_db.py
 │
-├── training_data.csv        # Dataset used for training model
-├── model.pkl                # Trained ML model (ignored)
-├── vectorizer.pkl           # Text vectorizer (ignored)
+├── model.py
+├── test_model.py
+├── utils.py
 │
-└── README.md                # Project documentation
+├── analyzer.py
+├── dashboard.py
+│
+├── training_data.csv
+├── model.pkl
+├── vectorizer.pkl
+│
+└── README.md
 
 
-## How It Works:
+## System Workflow:
 
-1. **Tracking Phase**:
-   * The `tracker.py` continuously monitors the active window every 5 seconds.
-   * It cleans and categorizes the application name before storing it in the database.
+### 1. Tracking Phase:
+- `tracker.py` continuously monitors the active window every 5 seconds  
+- Cleans and categorizes application names  
+- Stores activity data in the database  
 
-2. **Storage**:
-   * Data is stored in an SQLite database (`activity.db`).
+### 2. Data Storage:
+- SQLite database (`activity.db`) is used  
+- Stores:
+  - Application name  
+  - Timestamp  
 
-3. **Classification**:
-   * Activities are classified as **focus** or **distraction** using:
+### 3. Classification:
+- Activities are classified into:
+  - Focus  
+  - Distraction  
 
-     * Keyword-based rules
-     * Machine learning model (fallback)
+- Uses:
+  - Machine Learning model (Naive Bayes)  
+  - Rule-based enhancements  
 
-4. **Visualization**:
-   * The `dashboard.py` reads stored data and displays:
+### 4. Analysis:
+- `analyzer.py` performs CLI-based analysis  
 
-     * Focus vs Distraction pie chart
-     * Time-based trends
-     * Application usage bar chart
-     * Personal insights
+- Supports:
+  - Daily analysis  
+  - Weekly analysis  
+
+- Computes:
+  - Focus time  
+  - Distraction time  
+  - Productivity score  
+  - Focus streak  
+  - Behavioral insights  
+
+### 5. Visualization:
+- `dashboard.py` provides an interactive dashboard  
+
+- Features:
+  - Daily and Weekly toggle  
+  - Dynamic charts using Plotly  
+  - Real-time filtering  
+
+---
+
+## Dashboard Features:
+
+### Daily View:
+- Hour-wise activity trend  
+- Focus vs Distraction pie chart  
+- Application-based bar chart  
+- Time-based insights  
+- Maximum focus streak  
+
+### Weekly View:
+- Day-wise productivity trend  
+- Weekly bar chart (Focus vs Distraction per day)  
+- Weekly insights and behavior analysis  
+- Maximum focus streak with day  
+- Peak distraction day  
+
+
+## Insights Provided"
+
+### Daily Insights:
+- Most used application  
+- Most distracting application  
+- Focus percentage  
+- Distraction percentage  
+- Behavior (Focused/Distracted)  
+- Productivity level  
+- Peak distraction hour  
+- Maximum focus streak  
+- Total sessions  
+- Recommendation  
+
+### Weekly Insights:
+- Most used application  
+- Most distracting application  
+- Focus percentage  
+- Distraction percentage  
+- Weekly behavior  
+- Weekly productivity  
+- Peak distraction day  
+- Maximum focus streak with day  
+- Total sessions  
+- Recommendation  
 
 
 ## Installation:
 
-### 1. Clone the repository:
-```bash
+### 1. Clone Repository:
 git clone https://github.com/navaneethprofessional-hub/ai-based-procrastination-detection-system.git
 cd ai-based-procrastination-detection-system
-```
 
-### 2. Install dependencies:
-```bash
+### 2. Install Dependencies:
 pip install -r requirements.txt
-```
 
-### 3. Run the tracker:
-```bash
+### 3. Run Tracker:
 python tracker.py
-```
 
-### 4. Run the dashboard:
-```bash
+### 4. Run Dashboard:
 streamlit run dashboard.py
-```
+
 
 ## Usage:
-* Start the tracker to begin collecting activity data
-* Use your system normally
-* Open the dashboard to analyze your productivity
-* Identify distraction patterns and improve focus
-
-
-## Dashboard Insights:
-The dashboard provides:
-* Total focus time and distraction time
-* Productivity score (%)
-* Most used application
-* Most distracting application
-* Peak distraction time
-* Maximum focus streak
-* Time-based behavior analysis
+- Start the tracker to collect activity data  
+- Use your system normally  
+- Open the dashboard  
+- Switch between Daily and Weekly views  
+- Analyze insights to improve productivity  
 
 
 ## Example Categories:
-The system intelligently categorizes activities such as:
-* YT Python
-* YT SQL
-* YT Food
-* YT Movie
-* YT Music
-* YT IPL
-* VS Code
-* PDF
+- YT Music  
+- YT Movie  
+- YT Gaming  
+- YT Python  
+- VS Code  
+- PDF  
+- Notepad  
 
 
 ## Limitations:
-* Works best on Windows systems
-* Depends on window title accuracy
-* ML model accuracy depends on training data
-* Cannot track mobile usage
+- Works best on Windows systems  
+- Depends on window title accuracy  
+- ML model accuracy depends on training data  
+- Does not track mobile activity  
 
 
 ## Future Enhancements:
-* Real-time distraction alerts
-* Mobile app integration
-* Cloud-based data storage
-* Advanced ML model (deep learning)
-* Weekly/monthly reports
-* Focus goal setting
+- Real-time alerts  
+- Focus goal tracking  
+- Export reports (PDF/CSV)  
+- Advanced ML models  
+- Mobile support  
+- Cloud integration  
 
 
 ## Author:
-Navaneeth S
+Navaneeth S  
 
 
 ## License:
-This project is for educational and research purposes.
+This project is intended for educational and research purposes only.
