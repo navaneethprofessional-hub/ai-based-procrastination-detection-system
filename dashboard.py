@@ -2,111 +2,47 @@ import streamlit as st
 import sqlite3
 from model import predict_label
 import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime
+import plotly.express as px
 
 st.title("AI Productivity Dashboard")
 
-# connect to database
+# ---------------- MODE ----------------
+mode = st.selectbox("Select View", ["Daily", "Weekly"])
+
+# ---------------- DATABASE ----------------
 conn = sqlite3.connect("activity.db")
 cursor = conn.cursor()
 
-cursor.execute("SELECT app_name, timestamp FROM activity_logs")
+if mode == "Daily":
+    cursor.execute("""
+        SELECT app_name, timestamp FROM activity_logs
+        WHERE DATE(timestamp) = DATE('now')
+    """)
+else:
+    cursor.execute("""
+        SELECT app_name, timestamp FROM activity_logs
+        WHERE DATE(timestamp) >= DATE('now', '-6 days')
+    """)
+
 rows = cursor.fetchall()
 
-# ---------------- CLEAN NAME ----------------
-def clean_name(app_name):
-    name = app_name.lower()
+if not rows:
+    st.warning("No data available")
+    st.stop()
 
+# ---------------- CLEAN ----------------
+def clean_name(name):
+    name = name.lower()
     if "visual studio" in name:
         return "VS Code"
-
-    if "notepad" in name:
-        return "Notepad"
-
-    if ".pdf" in name:
-        return "PDF"
-
-    # YouTube categories (separate bars)
     if "youtube" in name:
-
-        # education
-        if "python" in name:
-            return "YT Python"
-        elif "sql" in name:
-            return "YT SQL"
-
-        # food
-        elif "recipe" in name or "food" in name or "fried rice" in name:
-            return "YT Food"
-
-        # movies
-        elif "trailer" in name or "movie" in name:
+        if "movie" in name:
             return "YT Movie"
+        return "YouTube"
+    return name.split("-")[0].strip()
 
-        # music
-        elif "song" in name or "music" in name:
-            return "YT Music"
-
-        # sports
-        elif "ipl" in name or "cricket" in name:
-            return "YT IPL"
-
-        # gaming
-        elif "game" in name or "gaming" in name:
-            return "YT Gaming"
-
-        else:
-            return "YouTube"
-
-    if "hill climb" in name:
-        return "Hill Climb Racing"
-
-    return app_name.split("-")[0].strip()
-
-
-# ---------------- CLASSIFICATION ----------------
-def classify(app_name):
-    name = app_name.lower()
-
-    focus_keywords = [
-        "python tutorial","python course","python project",
-        "sql tutorial","sql course","sql queries",
-        "coding practice","programming tutorial","coding interview",
-        "web development","app development","software development",
-        "machine learning","deep learning","data science",
-        "data analysis","data visualization",
-        "online lecture","study material","technical tutorial",
-        "debugging code","visual studio code","pycharm",
-        "jupyter notebook","github","stack overflow",
-        "pdf notes","research paper","documentation","study notes"
-    ]
-
-    distraction_keywords = [
-        "movie trailer","full movie","film scene",
-        "music video","video song","song lyrics",
-        "comedy video","funny video","meme video",
-        "gaming video","gameplay","live gaming",
-        "hill climb racing","pubg gameplay","free fire gameplay",
-        "ipl highlights","cricket match","match highlights",
-        "football highlights","live match",
-        "instagram reels","funny reels","short videos",
-        "whatsapp status","status video",
-        "cooking video","recipe video","food vlog",
-        "street food","food review","restaurant review",
-        "fried rice","chicken recipe","biryani recipe"
-    ]
-
-    if any(word in name for word in focus_keywords):
-        return "focus"
-
-    if any(word in name for word in distraction_keywords):
-        return "distraction"
-
-    return predict_label(name)
-
-
-# ---------------- PROCESSING ----------------
+# ---------------- PROCESS ----------------
 focus_count = 0
 distraction_count = 0
 
@@ -114,126 +50,173 @@ app_focus = {}
 app_distraction = {}
 
 hour_data = {}
+day_data = {}
+
 current_streak = 0
 max_streak = 0
+streak_day = ""
 
 for row in rows:
-    raw_name = row[0]
-    timestamp = row[1]
+    raw = row[0]
+    ts = row[1]
 
-    if "unknown" in raw_name.lower():
-        continue
+    app = clean_name(raw)
+    label = predict_label(raw)
 
-    app_name = clean_name(raw_name)
-    label = classify(raw_name)
-
-    hour = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").hour
+    dt = datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+    hour = dt.hour
+    day = dt.strftime("%A")
 
     if hour not in hour_data:
         hour_data[hour] = {"focus": 0, "distraction": 0}
 
+    if day not in day_data:
+        day_data[day] = {"focus": 0, "distraction": 0}
+
     if label == "focus":
         focus_count += 1
-        app_focus[app_name] = app_focus.get(app_name, 0) + 1
+        app_focus[app] = app_focus.get(app, 0) + 1
+
         hour_data[hour]["focus"] += 1
+        day_data[day]["focus"] += 1
 
         current_streak += 1
-        max_streak = max(max_streak, current_streak)
+        if current_streak > max_streak:
+            max_streak = current_streak
+            streak_day = day
 
     else:
         distraction_count += 1
-        app_distraction[app_name] = app_distraction.get(app_name, 0) + 1
+        app_distraction[app] = app_distraction.get(app, 0) + 1
+
         hour_data[hour]["distraction"] += 1
+        day_data[day]["distraction"] += 1
 
         current_streak = 0
-
 
 # ---------------- CALCULATIONS ----------------
 focus_time = focus_count * 5
 distraction_time = distraction_count * 5
 total_time = focus_time + distraction_time
 
-productivity_score = (focus_time / total_time) * 100 if total_time else 0
+score = (focus_time / total_time) * 100 if total_time else 0
 
-
-# ---------------- OVERALL STATS ----------------
+# ---------------- OVERALL ----------------
 st.subheader("Overall Statistics")
+st.write(f"Focus Time: {focus_time}")
+st.write(f"Distraction Time: {distraction_time}")
+st.write(f"Total Time: {total_time}")
+st.write(f"Productivity Score: {round(score,2)}%")
 
-st.write(f"Focus Time: {focus_time} sec")
-st.write(f"Distraction Time: {distraction_time} sec")
-st.write(f"Total Time: {total_time} sec")
-st.write(f"Productivity Score: {round(productivity_score, 2)} %")
-
-
-# ---------------- PIE CHART ----------------
+# ---------------- PIE ----------------
 st.subheader("Focus vs Distraction")
 
-fig1, ax1 = plt.subplots()
-ax1.pie([focus_time, distraction_time],
-        labels=["Focus", "Distraction"],
-        autopct="%1.1f%%")
-ax1.axis("equal")
+pie = px.pie(
+    names=["Focus", "Distraction"],
+    values=[focus_time, distraction_time],
+    color=["Focus", "Distraction"],
+    color_discrete_map={
+        "Focus": "#90EE90",
+        "Distraction": "#FF9999"
+    }
+)
+st.plotly_chart(pie, use_container_width=True)
 
-st.pyplot(fig1)
+# ---------------- LINE ----------------
+st.subheader("Trend Analysis")
 
+if mode == "Daily":
+    df = pd.DataFrame(hour_data).T.reset_index()
+    df.columns = ["Hour", "Focus", "Distraction"]
 
-# ---------------- LINE CHART ----------------
-st.subheader("Time-based Analysis")
+    fig = px.line(
+        df, x="Hour", y=["Focus", "Distraction"],
+        color_discrete_map={"Focus": "#90EE90", "Distraction": "#FF9999"}
+    )
 
-line_data = []
-for hour in sorted(hour_data.keys()):
-    line_data.append({
-        "Hour": hour,
-        "Focus": hour_data[hour]["focus"],
-        "Distraction": hour_data[hour]["distraction"]
-    })
+else:
+    df = pd.DataFrame(day_data).T.reset_index()
+    df.columns = ["Day", "Focus", "Distraction"]
 
-line_df = pd.DataFrame(line_data).set_index("Hour")
-st.line_chart(line_df)
+    fig = px.line(
+        df, x="Day", y=["Focus", "Distraction"],
+        color_discrete_map={"Focus": "#90EE90", "Distraction": "#FF9999"}
+    )
 
+st.plotly_chart(fig, use_container_width=True)
 
-# ---------------- BAR CHART ----------------
-st.subheader("Top Applications (YouTube categories separated)")
+# ---------------- BAR ----------------
+st.subheader("Bar Analysis")
 
-all_apps = set(app_focus) | set(app_distraction)
+if mode == "Daily":
+    data = []
+    for app in set(app_focus) | set(app_distraction):
+        data.append({
+            "App": app,
+            "Focus": app_focus.get(app, 0),
+            "Distraction": app_distraction.get(app, 0)
+        })
 
-data = []
-for app in all_apps:
-    data.append({
-        "App": app,
-        "Focus": app_focus.get(app, 0),
-        "Distraction": app_distraction.get(app, 0)
-    })
+    df = pd.DataFrame(data)
 
-app_df = pd.DataFrame(data)
+    fig = px.bar(
+        df, x="App", y=["Focus", "Distraction"],
+        color_discrete_map={"Focus": "#90EE90", "Distraction": "#FF9999"}
+    )
 
-app_df["Total"] = app_df["Focus"] + app_df["Distraction"]
-app_df = app_df.sort_values(by="Total", ascending=False).head(10)
+else:
+    df = pd.DataFrame(day_data).T.reset_index()
+    df.columns = ["Day", "Focus", "Distraction"]
 
-st.bar_chart(app_df.set_index("App")[["Focus", "Distraction"]])
+    fig = px.bar(
+        df, x="Day", y=["Focus", "Distraction"],
+        color_discrete_map={"Focus": "#90EE90", "Distraction": "#FF9999"}
+    )
 
+st.plotly_chart(fig, use_container_width=True)
 
 # ---------------- INSIGHTS ----------------
 st.subheader("Personal Insights")
 
-focus_percent = round((focus_time/total_time)*100, 2) if total_time else 0
-distraction_percent = round((distraction_time/total_time)*100, 2) if total_time else 0
+focus_pct = (focus_time/total_time)*100 if total_time else 0
+dis_pct = (distraction_time/total_time)*100 if total_time else 0
 
-most_used_app = app_df.iloc[0]["App"] if not app_df.empty else "N/A"
-most_distracting_app = max(app_distraction, key=app_distraction.get) if app_distraction else "N/A"
-peak_hour = max(hour_data, key=lambda x: hour_data[x]["distraction"]) if hour_data else "N/A"
+most_used = max(app_focus, key=app_focus.get) if app_focus else "N/A"
+most_dis = max(app_distraction, key=app_distraction.get) if app_distraction else "N/A"
 
-st.write(f"Most Used App: {most_used_app}")
-st.write(f"Most Distracting App: {most_distracting_app}")
-st.write(f"Focus Percentage: {focus_percent} %")
-st.write(f"Distraction Percentage: {distraction_percent} %")
-st.write(f"Behavior: {'Focused' if focus_count > distraction_count else 'Distracted'}")
-st.write(f"Productivity: {'Good' if productivity_score > 50 else 'Low'}")
-st.write(f"Peak Distraction Time: {peak_hour}:00")
-st.write(f"Max Focus Streak: {max_streak}")
-st.write(f"Total Sessions: {len(rows)}")
+behavior = "Focused" if focus_count > distraction_count else "Distracted"
+productivity = "Good" if score > 50 else "Low"
 
-if most_distracting_app != "N/A":
-    st.write(f"Recommendation: Reduce usage of {most_distracting_app}")
+# ---------------- DAILY INSIGHTS ----------------
+if mode == "Daily":
+
+    peak_hour = max(hour_data, key=lambda x: hour_data[x]["distraction"])
+
+    st.write(f"Most Used App: {most_used}")
+    st.write(f"Most Distracting App: {most_dis}")
+    st.write(f"Focus Percentage: {round(focus_pct,2)}%")
+    st.write(f"Distraction Percentage: {round(dis_pct,2)}%")
+    st.write(f"Behavior: {behavior}")
+    st.write(f"Productivity: {productivity}")
+    st.write(f"Peak Distraction Time: {peak_hour}:00")
+    st.write(f"Max Focus Streak: {max_streak}")
+    st.write(f"Total Sessions: {len(rows)}")
+    st.write(f"Recommendation: Reduce usage of {most_dis}")
+
+# ---------------- WEEKLY INSIGHTS ----------------
+else:
+
+    peak_day = max(day_data, key=lambda x: day_data[x]["distraction"])
+
+    st.write(f"Most Used App: {most_used}")
+    st.write(f"Most Distracting App: {most_dis}")
+    st.write(f"Focus Percentage: {round(focus_pct,2)}%")
+    st.write(f"Distraction Percentage: {round(dis_pct,2)}%")
+    st.write(f"Behavior: {behavior}")
+    st.write(f"Productivity: {productivity}")
+    st.write(f"Peak Distraction Day: {peak_day}")
+    st.write(f"Max Focus Streak: {max_streak} ({peak_day})")
+    st.write(f"Total Sessions: {len(rows)}")
+    st.write(f"Recommendation: Reduce usage of {most_dis}")
 
 conn.close()
